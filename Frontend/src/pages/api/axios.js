@@ -21,6 +21,10 @@
 
 // export default api;
 
+//above commented code is locally run this website then below are 
+//hosted on render when require locally then remove below code commented and 
+//.env frontend also commenmted
+
 import axios from "axios";
 
 const api = axios.create({
