@@ -204,6 +204,48 @@ exports.getEmployeesForSalary = async (req, res) => {
     res.status(500).json({ success: false });
   }
 };
+
+// DELETE /admin/employees/:id
+exports.deleteEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Employee ID is required",
+      });
+    }
+
+    // Check if employee exists
+    const [existing] = await db.query(
+      "SELECT id FROM employees WHERE id = ?",
+      [id]
+    );
+
+    if (existing.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Employee not found",
+      });
+    }
+
+    // Delete employee
+    await db.query("DELETE FROM employees WHERE id = ?", [id]);
+
+    res.json({
+      success: true,
+      message: "Employee deleted successfully",
+    });
+  } catch (err) {
+    console.error("Delete employee error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 // POST /admin/salary
 exports.addSalary = async (req, res) => {
   try {

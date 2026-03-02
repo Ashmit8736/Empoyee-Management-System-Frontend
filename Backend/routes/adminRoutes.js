@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { adminLogin } = require("../controllers/adminController");
+const { adminLogin, deleteEmployee } = require("../controllers/adminController");
 const adminAuth = require("../middleware/adminAuth");
 const db = require("../config/db");
 
@@ -23,6 +23,11 @@ router.get("/dashboard", adminAuth, (req, res) => {
     admin: req.admin
   });
 });
+
+// delete employee by admin
+
+router.delete("/employees/:id", deleteEmployee);
+
 
 
 /* =====================================================

@@ -11,24 +11,24 @@ const AdminDashboard = () => {
   const [alert, setAlert] = useState(null);
 
   // ==========================
-  // FETCH EMPLOYEES
+  // FETCH EMPLOYEES (✅ GLOBAL)
   // ==========================
-  useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const res = await api.get("/employee/all");
+  const fetchEmployees = async () => {
+    try {
+      const res = await api.get("/employee/all");
 
-        if (res.data.success && Array.isArray(res.data.data)) {
-          setEmployees(res.data.data);
-        } else {
-          setEmployees([]);
-        }
-      } catch (error) {
-        console.error("Fetch employees error:", error);
+      if (res.data.success && Array.isArray(res.data.data)) {
+        setEmployees(res.data.data);
+      } else {
         setEmployees([]);
       }
-    };
+    } catch (error) {
+      console.error("Fetch employees error:", error);
+      setEmployees([]);
+    }
+  };
 
+  useEffect(() => {
     fetchEmployees();
   }, []);
 
@@ -98,6 +98,36 @@ const AdminDashboard = () => {
     }
   };
 
+// delete employee
+ const handleDelete = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this employee?")) return;
+
+  try {
+    await api.delete(`/admin/employees/${id}`);
+
+    setAlert({
+      type: "success",
+      message: "Employee deleted successfully",
+    });
+
+    fetchEmployees(); // ✅ NOW WORKS
+
+    setTimeout(() => setAlert(null), 1500);
+  } catch (err) {
+    console.error(err);
+
+    setAlert({
+      type: "error",
+      message: "Failed to delete employee",
+    });
+
+    setTimeout(() => setAlert(null), 1500);
+  }
+};
+
+
+
+
   
   // ========================== PRESENT COUNT ==========================
   const presentCount = attendance.filter(a => a.attendance_type === "Present").length; 
@@ -159,6 +189,7 @@ const AdminDashboard = () => {
                 <th>Emp Code</th>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Action</th>
               </tr>
             </thead>
 
@@ -175,6 +206,14 @@ const AdminDashboard = () => {
                     <td>{emp.emp_code || "-"}</td>
                     <td>{emp.name}</td>
                     <td>{emp.email}</td>
+                    <td>
+    <button
+      className="delete-btn"
+      onClick={() => handleDelete(emp.id)}
+    >
+      Remove
+    </button>
+  </td>
                   </tr>
                 ))
               )}
